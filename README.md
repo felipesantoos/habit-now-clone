@@ -14,3 +14,9 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+# Credits
+
+- Videoplasty.com, CC BY-SA 4.0 <https://creativecommons.org/licenses/by-sa/4.0>, via Wikimedia Commons
+  - https://commons.wikimedia.org/wiki/File:Schedule_or_Calendar_Flat_Icon.svg
+  - https://upload.wikimedia.org/wikipedia/commons/a/ad/Schedule_or_Calendar_Flat_Icon.svg
