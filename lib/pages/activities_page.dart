@@ -17,13 +17,18 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
   static const Color _appGreyBackgroundColor = Color(0xFFF6F6F6);
 
   final int _tabNumber = 7;
-  int _selectedTabNumber = 0;
+  int _selectedTabNumber = 3;
 
   List<TabBarItemData> tabBarItemDataList = [
     TabBarItemData(weekDayName: 'Sun', monthDayNumber: 1),
     TabBarItemData(weekDayName: 'Mon', monthDayNumber: 2),
     TabBarItemData(weekDayName: 'Tue', monthDayNumber: 3),
-    TabBarItemData(weekDayName: 'Wed', monthDayNumber: 4, isToday: true),
+    TabBarItemData(
+      weekDayName: 'Wed',
+      monthDayNumber: 4,
+      isSelected: true,
+      isToday: true,
+    ),
     TabBarItemData(weekDayName: 'Thu', monthDayNumber: 5),
     TabBarItemData(weekDayName: 'Fri', monthDayNumber: 6),
     TabBarItemData(weekDayName: 'Sat', monthDayNumber: 7),
@@ -35,6 +40,7 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
       length: _tabNumber,
       child: Scaffold(
         appBar: _appBar(),
+        body: _emptyBody(context),
       ),
     );
   }
@@ -163,6 +169,7 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
                   weekDayName,
                   style: TextStyle(
                     color: isSelected ? _appWhiteColor : labelColor,
+                    fontFamily: 'Ubuntu',
                   ),
                 ),
                 Text(
@@ -171,6 +178,7 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
                     fontWeight: FontWeight.bold,
                     fontSize: 20.0,
                     color: isSelected ? _appWhiteColor : labelColor,
+                    fontFamily: 'Ubuntu',
                   ),
                 ),
               ],
@@ -191,6 +199,47 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
               )
             : Container(),
       ],
+    );
+  }
+
+  _emptyBody(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+    return SizedBox(
+      width: double.infinity,
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.only(top: (screenHeight - 115.0) / 5.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const <Widget>[
+              Image(
+                width: 75.0,
+                image: AssetImage(
+                  'images/calendar_icon.png',
+                ),
+              ),
+              SizedBox(height: 16.0),
+              Text(
+                'There is nothing scheduled',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20.0,
+                  fontFamily: 'Ubuntu',
+                ),
+              ),
+              SizedBox(height: 16.0),
+              Text(
+                'Add new activities',
+                style: TextStyle(
+                  color: _appGreyForegroundColor,
+                  fontSize: 16.0,
+                  fontFamily: 'Ubuntu',
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
