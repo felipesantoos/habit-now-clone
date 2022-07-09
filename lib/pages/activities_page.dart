@@ -56,10 +56,7 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
           backgroundColor: _appPinkColor,
           elevation: 3.0,
           tooltip: 'Add activity',
-          child: const Icon(
-            FontAwesomeIcons.plus,
-            size: 16.0,
-          ),
+          child: const Icon(FontAwesomeIcons.plus, size: 16.0),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       ),
@@ -374,7 +371,6 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
     required String label,
     required int index,
   }) {
-    debugPrint((index == _selectedIndex).toString());
     return Expanded(
       child: SizedBox(
         height: 60.0,
