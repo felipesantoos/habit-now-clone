@@ -50,7 +50,18 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
       child: Scaffold(
         appBar: _appBar(),
         body: _body(context),
-        bottomNavigationBar: _bottomNavigationBar(),
+        bottomNavigationBar: _bottomAppBar(),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {},
+          backgroundColor: _appPinkColor,
+          elevation: 3.0,
+          tooltip: 'Add activity',
+          child: const Icon(
+            FontAwesomeIcons.plus,
+            size: 16.0,
+          ),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       ),
     );
   }
@@ -325,55 +336,87 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
     });
   }
 
-  _bottomNavigationBar() {
-    return BottomNavigationBar(
-      backgroundColor: _appWhiteColor,
-      elevation: 5.0,
-      type: BottomNavigationBarType.fixed,
-      currentIndex: _selectedIndex,
-      onTap: _setSelectedBottomNavigationItem,
-      selectedItemColor: _appPinkColor,
-      selectedIconTheme: const IconThemeData(size: 16.0),
-      selectedFontSize: 12.0,
-      selectedLabelStyle: const TextStyle(
-        fontFamily: _defaultFontFamily,
-        fontWeight: FontWeight.bold,
+  _bottomAppBar() {
+    return BottomAppBar(
+      shape: const CircularNotchedRectangle(),
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          _bottomAppBarItem(
+            icon: FontAwesomeIcons.listCheck,
+            label: 'Today',
+            index: 0,
+          ),
+          _bottomAppBarItem(
+            icon: FontAwesomeIcons.trophy,
+            label: 'Habits',
+            index: 1,
+          ),
+          const SizedBox(width: 50.0),
+          _bottomAppBarItem(
+            icon: FontAwesomeIcons.circleCheck,
+            label: 'Tasks',
+            index: 2,
+          ),
+          _bottomAppBarItem(
+            icon: FontAwesomeIcons.cubes,
+            label: 'Categories',
+            index: 3,
+          ),
+        ],
       ),
-      unselectedIconTheme: const IconThemeData(size: 16.0),
-      unselectedFontSize: 12.0,
-      unselectedLabelStyle: const TextStyle(fontFamily: _defaultFontFamily),
-      items: <BottomNavigationBarItem>[
-        _bottomNavigationBarItem(
-          icon: FontAwesomeIcons.listCheck,
-          label: 'Today',
-        ),
-        _bottomNavigationBarItem(
-          icon: FontAwesomeIcons.trophy,
-          label: 'Habits',
-        ),
-        _bottomNavigationBarItem(
-          icon: FontAwesomeIcons.circleCheck,
-          label: 'Tasks',
-        ),
-        _bottomNavigationBarItem(
-          icon: FontAwesomeIcons.cubes,
-          label: 'Categories',
-        ),
-      ],
     );
   }
 
-  _bottomNavigationBarItem({required IconData? icon, required String? label}) {
-    return BottomNavigationBarItem(
-      icon: Padding(
-        padding: const EdgeInsets.only(bottom: 4.0),
-        child: Icon(icon),
+  _bottomAppBarItem({
+    required IconData icon,
+    required String label,
+    required int index,
+  }) {
+    debugPrint((index == _selectedIndex).toString());
+    return Expanded(
+      child: SizedBox(
+        height: 60.0,
+        child: Material(
+          type: MaterialType.transparency,
+          child: InkWell(
+            radius: 200.0,
+            borderRadius: BorderRadius.circular(30.0),
+            onTap: () => _setSelectedBottomAppBarItem(index),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 4.0),
+                  child: Icon(
+                    icon,
+                    size: 20.0,
+                    color: index == _selectedIndex
+                        ? _appPinkColor
+                        : _appGreyIconColor,
+                  ),
+                ),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontFamily: _defaultFontFamily,
+                    fontSize: 12.0,
+                    color: index == _selectedIndex
+                        ? _appPinkColor
+                        : _appGreyIconColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
-      label: label,
     );
   }
 
-  _setSelectedBottomNavigationItem(int index) {
+  _setSelectedBottomAppBarItem(int index) {
     setState(() {
       _selectedIndex = index;
     });
