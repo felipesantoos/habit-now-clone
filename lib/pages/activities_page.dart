@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 
 class ActivitiesPage extends StatefulWidget {
   const ActivitiesPage({Key? key}) : super(key: key);
@@ -12,7 +13,7 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
   static const Color _appWhiteColor = Color(0xFFFFFFFF);
   static const Color _appPinkColor = Color(0xFFD41E59);
   static const Color _appBlackColor = Color(0xFF000000);
-  static const Color _appGreyIconColor = Color(0xFF252525);
+  static const Color _appBlackGreyColor = Color(0xFF252525);
   static const Color _appGreyFC = Color(0xFF808080);
   static const Color _appGreyBC = Color(0xFFF6F6F6);
   static const Color _premiumButtonBackgroundColor = Color(0x80ffe6e6);
@@ -48,30 +49,22 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
     return DefaultTabController(
       length: _tabNumber,
       child: Scaffold(
-        appBar: _appBar(),
+        appBar: _appBar(context),
+        drawer: _drawer(context),
         body: _body(context),
-        bottomNavigationBar: _bottomAppBar(),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {},
-          backgroundColor: _appPinkColor,
-          elevation: 3.0,
-          tooltip: 'Add activity',
-          child: const Icon(
-            FontAwesomeIcons.plus,
-            size: 16.0,
-          ),
-        ),
+        floatingActionButton: _floatingActionButton(),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        bottomNavigationBar: _bottomAppBar(),
       ),
     );
   }
 
-  _appBar() {
+  _appBar(BuildContext context) {
     return PreferredSize(
       preferredSize: const Size.fromHeight(115.0),
       child: AppBar(
         backgroundColor: _appWhiteColor,
-        leading: _drawerButton(),
+        leading: _drawerButton(context),
         title: _title(),
         actions: _iconButtonList(),
         bottom: _tabBar(),
@@ -81,13 +74,153 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
     );
   }
 
-  _drawerButton() {
-    return IconButton(
-      onPressed: () {},
-      icon: const Icon(
-        FontAwesomeIcons.bars,
-        color: _appPinkColor,
+  _drawerButton(BuildContext context) {
+    return Builder(
+      builder: (context) => IconButton(
+        onPressed: () {
+          Scaffold.of(context).openDrawer();
+        },
+        icon: const Icon(
+          FontAwesomeIcons.bars,
+          color: _appPinkColor,
+        ),
       ),
+    );
+  }
+
+  _drawer(BuildContext context) {
+    DateTime now = DateTime.now();
+    DateFormat formatter = DateFormat('MMMM dd, yyyy');
+    String? formattedNow = formatter.format(now);
+    formatter = DateFormat('EEEE');
+    String? weekday = formatter.format(now);
+
+    return Drawer(
+      backgroundColor: _appWhiteColor,
+      child: ListView(
+        padding: const EdgeInsets.only(top: 32.0),
+        children: <Widget>[
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                const Text(
+                  'HabitNow',
+                  style: TextStyle(
+                    color: _appPinkColor,
+                    fontSize: 20.0,
+                    fontFamily: _defaultFontFamily,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4.0),
+                Text(
+                  weekday,
+                  style: const TextStyle(
+                    color: _appBlackGreyColor,
+                    fontFamily: _defaultFontFamily,
+                  ),
+                ),
+                const SizedBox(height: 4.0),
+                Text(
+                  formattedNow,
+                  style: const TextStyle(
+                    color: _appBlackGreyColor,
+                    fontFamily: _defaultFontFamily,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Divider(),
+          _drawerListTile(
+            onTap: () => Navigator.pop(context),
+            leading: const Icon(FontAwesomeIcons.house, color: _appPinkColor),
+            title: 'Home',
+            isPageOpen: true,
+          ),
+          _drawerListTile(
+            onTap: () {},
+            leading: const Icon(FontAwesomeIcons.cubes),
+            title: 'Categories',
+          ),
+          const Divider(),
+          _drawerListTile(
+            onTap: () {},
+            leading: const Icon(FontAwesomeIcons.fill),
+            title: 'Personalize',
+          ),
+          _drawerListTile(
+            onTap: () {},
+            leading: const Icon(FontAwesomeIcons.sliders),
+            title: 'Settings',
+          ),
+          const Divider(),
+          _drawerListTile(
+            onTap: () {},
+            leading: _premiumIcon(),
+            title: 'Get premium',
+          ),
+          _drawerListTile(
+            onTap: () {},
+            leading: const Icon(FontAwesomeIcons.solidStar),
+            title: 'Rate the app',
+          ),
+          _drawerListTile(
+            onTap: () {},
+            leading: const Icon(FontAwesomeIcons.solidMessage),
+            title: 'Contact us',
+          ),
+        ],
+      ),
+    );
+  }
+
+  _drawerListTile({
+    required Widget leading,
+    required String title,
+    bool isPageOpen = false,
+    required Function onTap,
+  }) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+      decoration: BoxDecoration(
+        color: isPageOpen ? _premiumButtonBackgroundColor : null,
+        borderRadius: BorderRadius.circular(4.0),
+      ),
+      child: ListTile(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(4.0),
+        ),
+        onTap: () => onTap(),
+        leading: leading,
+        title: Text(
+          title,
+          style: isPageOpen
+              ? const TextStyle(color: _appPinkColor)
+              : const TextStyle(),
+        ),
+      ),
+    );
+  }
+
+  _premiumIcon({Color? backgroundColor, double? backgroundSize}) {
+    return Stack(
+      alignment: Alignment.center,
+      children: <Widget>[
+        Icon(
+          FontAwesomeIcons.certificate,
+          color: backgroundColor,
+          size: backgroundSize,
+        ),
+        Icon(
+          FontAwesomeIcons.check,
+          color: _appWhiteColor,
+          size: backgroundSize == null ? 12.0 : backgroundSize - 8.0,
+        ),
+      ],
     );
   }
 
@@ -113,7 +246,7 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
   _iconButton({
     Function? onPressed,
     IconData? icon,
-    Color? iconColor = _appGreyIconColor,
+    Color? iconColor = _appBlackGreyColor,
   }) {
     return IconButton(
       onPressed: () => onPressed,
@@ -295,10 +428,9 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
               }),
             ),
             onPressed: () {},
-            icon: const Icon(
-              FontAwesomeIcons.solidStar,
-              size: 14.0,
-              color: _appPinkColor,
+            icon: _premiumIcon(
+              backgroundColor: _appPinkColor,
+              backgroundSize: 18.0,
             ),
             label: const Text(
               'Premium',
@@ -334,6 +466,16 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
     setState(() {
       _showPremiumButton = false;
     });
+  }
+
+  _floatingActionButton() {
+    return FloatingActionButton(
+      onPressed: () {},
+      backgroundColor: _appPinkColor,
+      elevation: 3.0,
+      tooltip: 'Add activity',
+      child: const Icon(FontAwesomeIcons.plus, size: 16.0),
+    );
   }
 
   _bottomAppBar() {
@@ -374,7 +516,6 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
     required String label,
     required int index,
   }) {
-    debugPrint((index == _selectedIndex).toString());
     return Expanded(
       child: SizedBox(
         height: 60.0,
@@ -395,7 +536,7 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
                     size: 20.0,
                     color: index == _selectedIndex
                         ? _appPinkColor
-                        : _appGreyIconColor,
+                        : _appBlackGreyColor,
                   ),
                 ),
                 Text(
@@ -405,7 +546,7 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
                     fontSize: 12.0,
                     color: index == _selectedIndex
                         ? _appPinkColor
-                        : _appGreyIconColor,
+                        : _appBlackGreyColor,
                   ),
                 ),
               ],
