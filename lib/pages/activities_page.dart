@@ -12,9 +12,12 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
   static const Color _appWhiteColor = Color(0xFFFFFFFF);
   static const Color _appPinkColor = Color(0xFFD41E59);
   static const Color _appBlackColor = Color(0xFF000000);
-  static const Color _greyIconColor = Color(0xFF252525);
-  static const Color _appGreyForegroundColor = Color(0xFF808080);
-  static const Color _appGreyBackgroundColor = Color(0xFFF6F6F6);
+  static const Color _appGreyIconColor = Color(0xFF252525);
+  static const Color _appGreyFC = Color(0xFF808080);
+  static const Color _appGreyBC = Color(0xFFF6F6F6);
+  static const Color _premiumButtonBackgroundColor = Color(0x80ffe6e6);
+
+  static const String _defaultFontFamily = 'Ubuntu';
 
   final int _tabNumber = 7;
   int _selectedTabNumber = 3;
@@ -34,13 +37,15 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
     TabBarItemData(weekDayName: 'Sat', monthDayNumber: 7),
   ];
 
+  bool _showPremiumButton = true;
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: _tabNumber,
       child: Scaffold(
         appBar: _appBar(),
-        body: _emptyBody(context),
+        body: _body(context),
       ),
     );
   }
@@ -76,32 +81,24 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
       style: TextStyle(
         color: _appBlackColor,
         fontWeight: FontWeight.bold,
-        fontFamily: 'Ubuntu',
+        fontFamily: _defaultFontFamily,
       ),
     );
   }
 
   _iconButtonList() {
     return <Widget>[
-      _iconButton(
-        icon: FontAwesomeIcons.magnifyingGlass,
-        iconColor: _greyIconColor,
-        onPressed: () {},
-      ),
-      _iconButton(
-        icon: FontAwesomeIcons.calendarWeek,
-        iconColor: _greyIconColor,
-        onPressed: () {},
-      ),
-      _iconButton(
-        icon: FontAwesomeIcons.ellipsisVertical,
-        iconColor: _greyIconColor,
-        onPressed: () {},
-      )
+      _iconButton(icon: FontAwesomeIcons.magnifyingGlass, onPressed: () {}),
+      _iconButton(icon: FontAwesomeIcons.calendarWeek, onPressed: () {}),
+      _iconButton(icon: FontAwesomeIcons.ellipsisVertical, onPressed: () {})
     ];
   }
 
-  _iconButton({Function? onPressed, IconData? icon, Color? iconColor}) {
+  _iconButton({
+    Function? onPressed,
+    IconData? icon,
+    Color? iconColor = _appGreyIconColor,
+  }) {
     return IconButton(
       onPressed: () => onPressed,
       icon: Icon(icon, color: iconColor),
@@ -148,7 +145,6 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
     required int monthDayNumber,
     bool isSelected = false,
     bool isToday = false,
-    Color labelColor = _appGreyForegroundColor,
   }) {
     return Stack(
       alignment: Alignment.bottomCenter,
@@ -158,7 +154,7 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
           margin: const EdgeInsets.symmetric(horizontal: 5.0),
           padding: const EdgeInsets.all(8.0),
           decoration: BoxDecoration(
-            color: isSelected ? _appPinkColor : _appGreyBackgroundColor,
+            color: isSelected ? _appPinkColor : _appGreyBC,
             borderRadius: BorderRadius.circular(16.0),
           ),
           child: FittedBox(
@@ -168,8 +164,8 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
                 Text(
                   weekDayName,
                   style: TextStyle(
-                    color: isSelected ? _appWhiteColor : labelColor,
-                    fontFamily: 'Ubuntu',
+                    color: isSelected ? _appWhiteColor : _appGreyFC,
+                    fontFamily: _defaultFontFamily,
                   ),
                 ),
                 Text(
@@ -177,8 +173,8 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 20.0,
-                    color: isSelected ? _appWhiteColor : labelColor,
-                    fontFamily: 'Ubuntu',
+                    color: isSelected ? _appWhiteColor : _appGreyFC,
+                    fontFamily: _defaultFontFamily,
                   ),
                 ),
               ],
@@ -190,7 +186,7 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
                 height: 3.0,
                 width: 12.0,
                 decoration: BoxDecoration(
-                  color: isSelected ? Colors.white70 : labelColor,
+                  color: isSelected ? Colors.white70 : _appGreyFC,
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(8.0),
                     topRight: Radius.circular(8.0),
@@ -202,9 +198,27 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
     );
   }
 
-  _emptyBody(BuildContext context) {
+  _body(BuildContext context) {
+    return Stack(
+      alignment: Alignment.bottomRight,
+      children: <Widget>[
+        _thereIsNotActivities(context),
+        _showPremiumButton
+            ? Positioned(
+                right: 10.0,
+                bottom: 2.0,
+                child: _premiumButton(),
+              )
+            : Container(),
+      ],
+    );
+  }
+
+  _thereIsNotActivities(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
-    return SizedBox(
+    return Container(
+      color: _appWhiteColor,
+      height: double.infinity,
       width: double.infinity,
       child: SingleChildScrollView(
         child: Padding(
@@ -224,16 +238,16 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20.0,
-                  fontFamily: 'Ubuntu',
+                  fontFamily: _defaultFontFamily,
                 ),
               ),
               SizedBox(height: 16.0),
               Text(
                 'Add new activities',
                 style: TextStyle(
-                  color: _appGreyForegroundColor,
+                  color: _appGreyFC,
                   fontSize: 16.0,
-                  fontFamily: 'Ubuntu',
+                  fontFamily: _defaultFontFamily,
                 ),
               ),
             ],
@@ -241,6 +255,66 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
         ),
       ),
     );
+  }
+
+  _premiumButton() {
+    return Stack(
+      alignment: Alignment.topRight,
+      children: <Widget>[
+        Container(
+          padding: const EdgeInsets.only(right: 3.0),
+          child: ElevatedButton.icon(
+            style: ButtonStyle(
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              elevation: MaterialStateProperty.resolveWith((states) => 0.0),
+              backgroundColor: MaterialStateColor.resolveWith((states) {
+                return _premiumButtonBackgroundColor;
+              }),
+            ),
+            onPressed: () {},
+            icon: const Icon(
+              FontAwesomeIcons.solidStar,
+              size: 14.0,
+              color: _appPinkColor,
+            ),
+            label: const Text(
+              'Premium',
+              style: TextStyle(
+                color: _appPinkColor,
+                fontFamily: _defaultFontFamily,
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          top: 3.0,
+          child: GestureDetector(
+            onTap: _closePremiumButton,
+            child: Container(
+              padding: const EdgeInsets.all(1.0),
+              decoration: BoxDecoration(
+                  color: const Color(0x10000000),
+                  borderRadius: BorderRadius.circular(8.0)),
+              child: const Icon(
+                Icons.close,
+                size: 8.0,
+                color: _appWhiteColor,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  _closePremiumButton() {
+    setState(() {
+      _showPremiumButton = false;
+    });
   }
 }
 
