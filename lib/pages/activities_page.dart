@@ -50,15 +50,9 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
       child: Scaffold(
         appBar: _appBar(),
         body: _body(context),
-        bottomNavigationBar: _bottomAppBar(),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {},
-          backgroundColor: _appPinkColor,
-          elevation: 3.0,
-          tooltip: 'Add activity',
-          child: const Icon(FontAwesomeIcons.plus, size: 16.0),
-        ),
+        floatingActionButton: _floatingActionButton(),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        bottomNavigationBar: _bottomAppBar(),
       ),
     );
   }
@@ -331,6 +325,16 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
     setState(() {
       _showPremiumButton = false;
     });
+  }
+
+  _floatingActionButton() {
+    return FloatingActionButton(
+      onPressed: () {},
+      backgroundColor: _appPinkColor,
+      elevation: 3.0,
+      tooltip: 'Add activity',
+      child: const Icon(FontAwesomeIcons.plus, size: 16.0),
+    );
   }
 
   _bottomAppBar() {
