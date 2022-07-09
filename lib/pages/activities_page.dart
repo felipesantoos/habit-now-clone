@@ -16,6 +16,8 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
   static const Color _appGreyFC = Color(0xFF808080);
   static const Color _appGreyBC = Color(0xFFF6F6F6);
   static const Color _premiumButtonBackgroundColor = Color(0x80ffe6e6);
+  static const Color _appBarShadowColor = Color(0x209E9E80);
+  static const Color _closePremiumButtonBCIcon = Color(0x10000000);
 
   static const String _defaultFontFamily = 'Ubuntu';
 
@@ -39,6 +41,8 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
 
   bool _showPremiumButton = true;
 
+  int _selectedIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -46,6 +50,7 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
       child: Scaffold(
         appBar: _appBar(),
         body: _body(context),
+        bottomNavigationBar: _bottomNavigationBar(),
       ),
     );
   }
@@ -59,8 +64,8 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
         title: _title(),
         actions: _iconButtonList(),
         bottom: _tabBar(),
-        elevation: 0.25,
-        shadowColor: Colors.grey,
+        elevation: 1.0,
+        shadowColor: _appBarShadowColor,
       ),
     );
   }
@@ -222,7 +227,10 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
       width: double.infinity,
       child: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.only(top: (screenHeight - 115.0) / 5.0),
+          padding: EdgeInsets.only(
+            top: (screenHeight - 115.0) / 4.0,
+            bottom: 15.0,
+          ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: const <Widget>[
@@ -297,7 +305,7 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
             child: Container(
               padding: const EdgeInsets.all(1.0),
               decoration: BoxDecoration(
-                  color: const Color(0x10000000),
+                  color: _closePremiumButtonBCIcon,
                   borderRadius: BorderRadius.circular(8.0)),
               child: const Icon(
                 Icons.close,
@@ -314,6 +322,60 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
   _closePremiumButton() {
     setState(() {
       _showPremiumButton = false;
+    });
+  }
+
+  _bottomNavigationBar() {
+    return BottomNavigationBar(
+      backgroundColor: _appWhiteColor,
+      elevation: 5.0,
+      type: BottomNavigationBarType.fixed,
+      currentIndex: _selectedIndex,
+      onTap: _setSelectedBottomNavigationItem,
+      selectedItemColor: _appPinkColor,
+      selectedIconTheme: const IconThemeData(size: 16.0),
+      selectedFontSize: 12.0,
+      selectedLabelStyle: const TextStyle(
+        fontFamily: _defaultFontFamily,
+        fontWeight: FontWeight.bold,
+      ),
+      unselectedIconTheme: const IconThemeData(size: 16.0),
+      unselectedFontSize: 12.0,
+      unselectedLabelStyle: const TextStyle(fontFamily: _defaultFontFamily),
+      items: <BottomNavigationBarItem>[
+        _bottomNavigationBarItem(
+          icon: FontAwesomeIcons.listCheck,
+          label: 'Today',
+        ),
+        _bottomNavigationBarItem(
+          icon: FontAwesomeIcons.trophy,
+          label: 'Habits',
+        ),
+        _bottomNavigationBarItem(
+          icon: FontAwesomeIcons.circleCheck,
+          label: 'Tasks',
+        ),
+        _bottomNavigationBarItem(
+          icon: FontAwesomeIcons.cubes,
+          label: 'Categories',
+        ),
+      ],
+    );
+  }
+
+  _bottomNavigationBarItem({required IconData? icon, required String? label}) {
+    return BottomNavigationBarItem(
+      icon: Padding(
+        padding: const EdgeInsets.only(bottom: 4.0),
+        child: Icon(icon),
+      ),
+      label: label,
+    );
+  }
+
+  _setSelectedBottomNavigationItem(int index) {
+    setState(() {
+      _selectedIndex = index;
     });
   }
 }
