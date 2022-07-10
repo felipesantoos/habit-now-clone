@@ -92,7 +92,7 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
       child: SafeArea(
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Colors.white, // TODO: remove because x button action
             border: Border(
               bottom: BorderSide(
                 color: Colors.grey.withOpacity(0.25),
@@ -140,6 +140,29 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
                 width: 1.0,
                 color: Colors.grey.withOpacity(0.25),
               ),
+              Container(
+                padding: const EdgeInsets.only(left: 32.0),
+                width: (screenWidth * 55) / 100,
+                child: TextField(
+                  decoration: InputDecoration(
+                    border: _textFieldBorder(),
+                    focusedBorder: _textFieldBorder(),
+                    enabledBorder: _textFieldBorder(),
+                    hintStyle: const TextStyle(
+                      fontSize: 14.0,
+                    ),
+                    hintText: 'Type a name or category',
+                  ),
+                ),
+              ),
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    _appBarController = 0;
+                  });
+                },
+                icon: const Icon(FontAwesomeIcons.xmark),
+              ),
             ],
           ),
         ),
@@ -149,6 +172,15 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
 
   _dropdownBorder() {
     return const OutlineInputBorder(
+      borderSide: BorderSide(
+        color: Colors.transparent,
+        width: 0.0,
+      ),
+    );
+  }
+
+  _textFieldBorder() {
+    return const UnderlineInputBorder(
       borderSide: BorderSide(
         color: Colors.transparent,
         width: 0.0,
