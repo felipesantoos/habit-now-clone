@@ -88,9 +88,10 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
   _searchAppBar(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     return PreferredSize(
-      preferredSize: const Size.fromHeight(60.0),
+      preferredSize: const Size.fromHeight(115.0),
       child: SafeArea(
         child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
           decoration: BoxDecoration(
             color: Colors.white, // TODO: remove because x button action
             border: Border(
@@ -102,67 +103,70 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
             ),
           ),
           height: double.maxFinite,
-          child: Row(
+          child: Column(
             children: <Widget>[
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                width: (screenWidth * 30) / 100,
-                child: DropdownButtonFormField(
-                  decoration: InputDecoration(
-                    border: _dropdownBorder(),
-                    focusedBorder: _dropdownBorder(),
-                    enabledBorder: _dropdownBorder(),
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                  value: _dropdownValue,
-                  items: _dropdownItemValueList
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(
-                        value,
-                        style: const TextStyle(
-                          fontFamily: _defaultFontFamily,
-                        ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  SizedBox(
+                    width: (screenWidth * 25) / 100,
+                    child: DropdownButtonFormField(
+                      decoration: InputDecoration(
+                        border: _dropdownBorder(),
+                        focusedBorder: _dropdownBorder(),
+                        enabledBorder: _dropdownBorder(),
+                        contentPadding: const EdgeInsets.fromLTRB(8, 8, 0, 8),
                       ),
-                    );
-                  }).toList(),
-                  onChanged: (String? value) {
-                    setState(() {
-                      _dropdownValue = value!;
-                    });
-                  },
-                  elevation: 1,
-                ),
-              ),
-              Container(
-                height: 35.0,
-                width: 1.0,
-                color: Colors.grey.withOpacity(0.25),
-              ),
-              Container(
-                padding: const EdgeInsets.only(left: 32.0),
-                width: (screenWidth * 55) / 100,
-                child: TextField(
-                  decoration: InputDecoration(
-                    border: _textFieldBorder(),
-                    focusedBorder: _textFieldBorder(),
-                    enabledBorder: _textFieldBorder(),
-                    hintStyle: const TextStyle(
-                      fontSize: 14.0,
+                      value: _dropdownValue,
+                      items: _dropdownItemValueList
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(
+                            value,
+                            style: const TextStyle(
+                              fontFamily: _defaultFontFamily,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (String? value) {
+                        setState(() {
+                          _dropdownValue = value!;
+                        });
+                      },
+                      elevation: 1,
                     ),
-                    hintText: 'Type a name or category',
                   ),
-                ),
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                    height: 35.0,
+                    width: 1.0,
+                    color: Colors.grey.withOpacity(0.25),
+                  ),
+                  SizedBox(
+                    width: (screenWidth * 55) / 100,
+                    child: TextField(
+                      decoration: InputDecoration(
+                        border: _textFieldBorder(),
+                        focusedBorder: _textFieldBorder(),
+                        enabledBorder: _textFieldBorder(),
+                        hintStyle: const TextStyle(
+                          fontSize: 14.0,
+                        ),
+                        hintText: 'Type a name or category',
+                      ),
+                    ),
+                  ),
+                  Material(
+                    child: InkWell(
+                      onTap: () => setState(() => _appBarController = 0),
+                      child: const Icon(FontAwesomeIcons.xmark),
+                    ),
+                  ),
+                ],
               ),
-              IconButton(
-                onPressed: () {
-                  setState(() {
-                    _appBarController = 0;
-                  });
-                },
-                icon: const Icon(FontAwesomeIcons.xmark),
-              ),
+              _tabBar(),
             ],
           ),
         ),
