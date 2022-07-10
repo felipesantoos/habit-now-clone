@@ -44,12 +44,23 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
 
   int _selectedIndex = 0;
 
+  late PreferredSizeWidget _appBar;
+  int _appBarController = 0;
+
+  final List<String> _dropdownItemValueList = ['All', 'Habits', 'Tasks'];
+  String _dropdownValue = 'All';
+
   @override
   Widget build(BuildContext context) {
+    if (_appBarController == 0) {
+      _appBar = _defaultAppBar(context);
+    } else {
+      _appBar = _searchAppBar(context);
+    }
     return DefaultTabController(
       length: _tabNumber,
       child: Scaffold(
-        appBar: _appBar(context),
+        appBar: _appBar,
         drawer: _drawer(context),
         body: _body(context),
         floatingActionButton: _floatingActionButton(),
@@ -59,7 +70,7 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
     );
   }
 
-  _appBar(BuildContext context) {
+  _defaultAppBar(BuildContext context) {
     return PreferredSize(
       preferredSize: const Size.fromHeight(115.0),
       child: AppBar(
@@ -70,6 +81,77 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
         bottom: _tabBar(),
         elevation: 1.0,
         shadowColor: _appBarShadowColor,
+      ),
+    );
+  }
+
+  _searchAppBar(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    return PreferredSize(
+      preferredSize: const Size.fromHeight(60.0),
+      child: SafeArea(
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border(
+              bottom: BorderSide(
+                color: Colors.grey.withOpacity(0.25),
+                width: 1.0,
+                style: BorderStyle.solid,
+              ),
+            ),
+          ),
+          height: double.maxFinite,
+          child: Row(
+            children: <Widget>[
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                width: (screenWidth * 30) / 100,
+                child: DropdownButtonFormField(
+                  decoration: InputDecoration(
+                    border: _dropdownBorder(),
+                    focusedBorder: _dropdownBorder(),
+                    enabledBorder: _dropdownBorder(),
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                  value: _dropdownValue,
+                  items: _dropdownItemValueList
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(
+                        value,
+                        style: const TextStyle(
+                          fontFamily: _defaultFontFamily,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (String? value) {
+                    setState(() {
+                      _dropdownValue = value!;
+                    });
+                  },
+                  elevation: 1,
+                ),
+              ),
+              Container(
+                height: 35.0,
+                width: 1.0,
+                color: Colors.grey.withOpacity(0.25),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  _dropdownBorder() {
+    return const OutlineInputBorder(
+      borderSide: BorderSide(
+        color: Colors.transparent,
+        width: 0.0,
       ),
     );
   }
@@ -237,19 +319,26 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
 
   _iconButtonList() {
     return <Widget>[
-      _iconButton(icon: FontAwesomeIcons.magnifyingGlass, onPressed: () {}),
+      _iconButton(
+        icon: FontAwesomeIcons.magnifyingGlass,
+        onPressed: () {
+          setState(() {
+            _appBarController = 1;
+          });
+        },
+      ),
       _iconButton(icon: FontAwesomeIcons.calendarWeek, onPressed: () {}),
       _iconButton(icon: FontAwesomeIcons.ellipsisVertical, onPressed: () {})
     ];
   }
 
   _iconButton({
-    Function? onPressed,
-    IconData? icon,
-    Color? iconColor = _appBlackGreyColor,
+    required Function onPressed,
+    required IconData icon,
+    Color iconColor = _appBlackGreyColor,
   }) {
     return IconButton(
-      onPressed: () => onPressed,
+      onPressed: () => onPressed(),
       icon: Icon(icon, color: iconColor),
     );
   }
