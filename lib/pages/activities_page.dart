@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import '../components/tab_bar.dart';
+import '../utils/colors.dart';
+import '../utils/fonts.dart';
 
 class ActivitiesPage extends StatefulWidget {
   const ActivitiesPage({Key? key}) : super(key: key);
@@ -10,22 +13,17 @@ class ActivitiesPage extends StatefulWidget {
 }
 
 class _ActivitiesPageState extends State<ActivitiesPage> {
-  static const Color _appWhiteColor = Color(0xFFFFFFFF);
-  static const Color _appPinkColor = Color(0xFFD41E59);
-  static const Color _appBlackColor = Color(0xFF000000);
-  static const Color _appBlackGreyColor = Color(0xFF252525);
-  static const Color _appGreyFC = Color(0xFF808080);
-  static const Color _appGreyBC = Color(0xFFF6F6F6);
-  static const Color _premiumButtonBackgroundColor = Color(0x80ffe6e6);
-  static const Color _appBarShadowColor = Color(0x209E9E80);
-  static const Color _closePremiumButtonBCIcon = Color(0x10000000);
+  // AppBar
+  late PreferredSizeWidget _appBar;
+  int _appBarController = 0;
 
-  static const String _defaultFontFamily = 'Ubuntu';
+  // Dropdown
+  final List<String> _dropdownItemValueList = ['All', 'Habits', 'Tasks'];
+  String _dropdownValue = 'All';
 
+  // TabBar
   final int _tabNumber = 7;
-  int _selectedTabNumber = 3;
-
-  List<TabBarItemData> tabBarItemDataList = [
+  final List<TabBarItemData> _tabBarItemDataList = [
     TabBarItemData(weekDayName: 'Sun', monthDayNumber: 1),
     TabBarItemData(weekDayName: 'Mon', monthDayNumber: 2),
     TabBarItemData(weekDayName: 'Tue', monthDayNumber: 3),
@@ -40,27 +38,19 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
     TabBarItemData(weekDayName: 'Sat', monthDayNumber: 7),
   ];
 
+  // Premium button
   bool _showPremiumButton = true;
 
+  // BottomAppBar
   int _selectedIndex = 0;
-
-  late PreferredSizeWidget _appBar;
-  int _appBarController = 0;
-
-  final List<String> _dropdownItemValueList = ['All', 'Habits', 'Tasks'];
-  String _dropdownValue = 'All';
 
   @override
   Widget build(BuildContext context) {
-    if (_appBarController == 0) {
-      _appBar = _defaultAppBar(context);
-    } else {
-      _appBar = _searchAppBar(context);
-    }
+    _chooseAppBar(context);
     return DefaultTabController(
       length: _tabNumber,
       child: Scaffold(
-        appBar: _appBar,
+        appBar: _buildAppBar(),
         drawer: _drawer(context),
         body: _body(context),
         floatingActionButton: _floatingActionButton(),
@@ -70,103 +60,118 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
     );
   }
 
-  _defaultAppBar(BuildContext context) {
+  _chooseAppBar(BuildContext context) {
+    if (_appBarController == 0) {
+      _appBar = _defaultAppBar(context);
+    } else {
+      _appBar = _searchAppBar(context);
+    }
+  }
+
+  _buildAppBar() {
     return PreferredSize(
-      preferredSize: const Size.fromHeight(115.0),
-      child: AppBar(
-        backgroundColor: _appWhiteColor,
-        leading: _drawerButton(context),
-        title: _title(),
-        actions: _iconButtonList(),
-        bottom: _tabBar(),
-        elevation: 1.0,
-        shadowColor: _appBarShadowColor,
+      preferredSize: const Size.fromHeight(123.0),
+      child: Column(
+        children: <Widget>[
+          _appBar,
+          CustomTabBar(
+            tabNumber: _tabNumber,
+            tabBarItemDataList: _tabBarItemDataList,
+            initialSelectedTabNumber: 3,
+          ),
+        ],
       ),
     );
   }
 
-  _searchAppBar(BuildContext context) {
+  _defaultAppBar(BuildContext context) {
+    return AppBar(
+      toolbarHeight: 56.0,
+      backgroundColor: CustomColors.appWhiteColor,
+      leading: _drawerButton(context),
+      title: _title(),
+      actions: _iconButtonList(),
+      elevation: 0,
+    );
+  }
+
+  PreferredSize _searchAppBar(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     return PreferredSize(
-      preferredSize: const Size.fromHeight(115.0),
+      preferredSize: const Size.fromHeight(56.0),
       child: SafeArea(
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          decoration: BoxDecoration(
-            color: Colors.white, // TODO: remove because x button action
-            border: Border(
-              bottom: BorderSide(
-                color: Colors.grey.withOpacity(0.25),
-                width: 1.0,
-                style: BorderStyle.solid,
-              ),
-            ),
+          padding: const EdgeInsets.only(
+            top: 4.0,
+            left: 6.0,
+            right: 8.0,
+            bottom: 4.0,
           ),
-          height: double.maxFinite,
-          child: Column(
+          color: Colors.white,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  SizedBox(
-                    width: (screenWidth * 25) / 100,
-                    child: DropdownButtonFormField(
-                      decoration: InputDecoration(
-                        border: _dropdownBorder(),
-                        focusedBorder: _dropdownBorder(),
-                        enabledBorder: _dropdownBorder(),
-                        contentPadding: const EdgeInsets.fromLTRB(8, 8, 0, 8),
-                      ),
-                      value: _dropdownValue,
-                      items: _dropdownItemValueList
-                          .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(
-                            value,
-                            style: const TextStyle(
-                              fontFamily: _defaultFontFamily,
-                            ),
+              Material(
+                color: Colors.white,
+                child: SizedBox(
+                  height: 40.0,
+                  width: (screenWidth * 25) / 100,
+                  child: DropdownButtonFormField(
+                    decoration: InputDecoration(
+                      border: _dropdownBorder(),
+                      focusedBorder: _dropdownBorder(),
+                      enabledBorder: _dropdownBorder(),
+                      contentPadding: const EdgeInsets.only(left: 8.0),
+                    ),
+                    value: _dropdownValue,
+                    items: _dropdownItemValueList
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(
+                          value,
+                          style: const TextStyle(
+                            fontFamily: CustomFonts.defaultFontFamily,
                           ),
-                        );
-                      }).toList(),
-                      onChanged: (String? value) {
-                        setState(() {
-                          _dropdownValue = value!;
-                        });
-                      },
-                      elevation: 1,
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 8.0),
-                    height: 35.0,
-                    width: 1.0,
-                    color: Colors.grey.withOpacity(0.25),
-                  ),
-                  SizedBox(
-                    width: (screenWidth * 55) / 100,
-                    child: TextField(
-                      decoration: InputDecoration(
-                        border: _textFieldBorder(),
-                        focusedBorder: _textFieldBorder(),
-                        enabledBorder: _textFieldBorder(),
-                        hintStyle: const TextStyle(
-                          fontSize: 14.0,
                         ),
-                        hintText: 'Type a name or category',
-                      ),
-                    ),
+                      );
+                    }).toList(),
+                    onChanged: (String? value) {
+                      setState(() {
+                        _dropdownValue = value!;
+                      });
+                    },
+                    elevation: 1,
                   ),
-                  Material(
-                    child: InkWell(
-                      onTap: () => setState(() => _appBarController = 0),
-                      child: const Icon(FontAwesomeIcons.xmark),
-                    ),
-                  ),
-                ],
+                ),
               ),
-              _tabBar(),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                height: 35.0,
+                width: 1.0,
+                color: Colors.grey.withOpacity(0.25),
+              ),
+              SizedBox(
+                width: (screenWidth * 55) / 100,
+                child: TextField(
+                  autofocus: true,
+                  decoration: InputDecoration(
+                    border: _textFieldBorder(),
+                    focusedBorder: _textFieldBorder(),
+                    enabledBorder: _textFieldBorder(),
+                    hintStyle: const TextStyle(
+                      fontSize: 14.0,
+                    ),
+                    hintText: 'Type a name or category',
+                  ),
+                ),
+              ),
+              Material(
+                child: InkWell(
+                  onTap: () => setState(() => _appBarController = 0),
+                  child: const Icon(FontAwesomeIcons.xmark),
+                ),
+              ),
             ],
           ),
         ),
@@ -195,12 +200,13 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
   _drawerButton(BuildContext context) {
     return Builder(
       builder: (context) => IconButton(
+        splashRadius: 25.0,
         onPressed: () {
           Scaffold.of(context).openDrawer();
         },
         icon: const Icon(
           FontAwesomeIcons.bars,
-          color: _appPinkColor,
+          color: CustomColors.appPinkColor,
         ),
       ),
     );
@@ -214,7 +220,7 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
     String? weekday = formatter.format(now);
 
     return Drawer(
-      backgroundColor: _appWhiteColor,
+      backgroundColor: CustomColors.appWhiteColor,
       child: ListView(
         padding: const EdgeInsets.only(top: 32.0),
         children: <Widget>[
@@ -227,9 +233,9 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
                 const Text(
                   'HabitNow',
                   style: TextStyle(
-                    color: _appPinkColor,
+                    color: CustomColors.appPinkColor,
                     fontSize: 20.0,
-                    fontFamily: _defaultFontFamily,
+                    fontFamily: CustomFonts.defaultFontFamily,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -237,16 +243,16 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
                 Text(
                   weekday,
                   style: const TextStyle(
-                    color: _appBlackGreyColor,
-                    fontFamily: _defaultFontFamily,
+                    color: CustomColors.appBlackGreyColor,
+                    fontFamily: CustomFonts.defaultFontFamily,
                   ),
                 ),
                 const SizedBox(height: 4.0),
                 Text(
                   formattedNow,
                   style: const TextStyle(
-                    color: _appBlackGreyColor,
-                    fontFamily: _defaultFontFamily,
+                    color: CustomColors.appBlackGreyColor,
+                    fontFamily: CustomFonts.defaultFontFamily,
                   ),
                 ),
               ],
@@ -255,7 +261,8 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
           const Divider(),
           _drawerListTile(
             onTap: () => Navigator.pop(context),
-            leading: const Icon(FontAwesomeIcons.house, color: _appPinkColor),
+            leading: const Icon(FontAwesomeIcons.house,
+                color: CustomColors.appPinkColor),
             title: 'Home',
             isPageOpen: true,
           ),
@@ -305,7 +312,7 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
       decoration: BoxDecoration(
-        color: isPageOpen ? _premiumButtonBackgroundColor : null,
+        color: isPageOpen ? CustomColors.premiumButtonBackgroundColor : null,
         borderRadius: BorderRadius.circular(4.0),
       ),
       child: ListTile(
@@ -317,7 +324,7 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
         title: Text(
           title,
           style: isPageOpen
-              ? const TextStyle(color: _appPinkColor)
+              ? const TextStyle(color: CustomColors.appPinkColor)
               : const TextStyle(),
         ),
       ),
@@ -335,7 +342,7 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
         ),
         Icon(
           FontAwesomeIcons.check,
-          color: _appWhiteColor,
+          color: CustomColors.appWhiteColor,
           size: backgroundSize == null ? 12.0 : backgroundSize - 8.0,
         ),
       ],
@@ -346,9 +353,9 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
     return const Text(
       'Today',
       style: TextStyle(
-        color: _appBlackColor,
+        color: CustomColors.appBlackColor,
         fontWeight: FontWeight.bold,
-        fontFamily: _defaultFontFamily,
+        fontFamily: CustomFonts.defaultFontFamily,
       ),
     );
   }
@@ -371,104 +378,12 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
   _iconButton({
     required Function onPressed,
     required IconData icon,
-    Color iconColor = _appBlackGreyColor,
+    Color iconColor = CustomColors.appBlackGreyColor,
   }) {
     return IconButton(
+      splashRadius: 25.0,
       onPressed: () => onPressed(),
       icon: Icon(icon, color: iconColor),
-    );
-  }
-
-  _tabBar() {
-    return TabBar(
-      overlayColor: MaterialStateColor.resolveWith(
-        (states) => Colors.transparent,
-      ),
-      labelPadding: const EdgeInsets.all(0.0),
-      indicator: const UnderlineTabIndicator(),
-      padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 12.0),
-      onTap: _onTapTabBar,
-      tabs: [
-        for (int i = 0; i < _tabNumber; i++)
-          Tab(
-            child: _tabBarItem(
-              weekDayName: tabBarItemDataList[i].weekDayName,
-              monthDayNumber: tabBarItemDataList[i].monthDayNumber,
-              isSelected: tabBarItemDataList[i].isSelected!,
-              isToday: tabBarItemDataList[i].isToday!,
-            ),
-          ),
-      ],
-    );
-  }
-
-  _onTapTabBar(index) {
-    for (int i = 0; i < _tabNumber; i++) {
-      if (i == index) {
-        setState(() {
-          tabBarItemDataList[_selectedTabNumber].isSelected = false;
-          tabBarItemDataList[i].isSelected = true;
-          _selectedTabNumber = i;
-        });
-      }
-    }
-  }
-
-  _tabBarItem({
-    required String weekDayName,
-    required int monthDayNumber,
-    bool isSelected = false,
-    bool isToday = false,
-  }) {
-    return Stack(
-      alignment: Alignment.bottomCenter,
-      children: <Widget>[
-        Container(
-          width: double.infinity,
-          margin: const EdgeInsets.symmetric(horizontal: 5.0),
-          padding: const EdgeInsets.all(8.0),
-          decoration: BoxDecoration(
-            color: isSelected ? _appPinkColor : _appGreyBC,
-            borderRadius: BorderRadius.circular(16.0),
-          ),
-          child: FittedBox(
-            fit: BoxFit.contain,
-            child: Column(
-              children: <Widget>[
-                Text(
-                  weekDayName,
-                  style: TextStyle(
-                    color: isSelected ? _appWhiteColor : _appGreyFC,
-                    fontFamily: _defaultFontFamily,
-                  ),
-                ),
-                Text(
-                  monthDayNumber.toString(),
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20.0,
-                    color: isSelected ? _appWhiteColor : _appGreyFC,
-                    fontFamily: _defaultFontFamily,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        isToday
-            ? Container(
-                height: 3.0,
-                width: 12.0,
-                decoration: BoxDecoration(
-                  color: isSelected ? Colors.white70 : _appGreyFC,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(8.0),
-                    topRight: Radius.circular(8.0),
-                  ),
-                ),
-              )
-            : Container(),
-      ],
     );
   }
 
@@ -490,9 +405,8 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
 
   _thereIsNotActivities(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
-    return Container(
-      color: _appWhiteColor,
-      height: double.infinity,
+    return SizedBox(
+      height: screenHeight - 145.0,
       width: double.infinity,
       child: SingleChildScrollView(
         child: Padding(
@@ -515,16 +429,16 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20.0,
-                  fontFamily: _defaultFontFamily,
+                  fontFamily: CustomFonts.defaultFontFamily,
                 ),
               ),
               SizedBox(height: 16.0),
               Text(
                 'Add new activities',
                 style: TextStyle(
-                  color: _appGreyFC,
+                  color: CustomColors.appGreyFC,
                   fontSize: 16.0,
-                  fontFamily: _defaultFontFamily,
+                  fontFamily: CustomFonts.defaultFontFamily,
                 ),
               ),
             ],
@@ -549,19 +463,19 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
               ),
               elevation: MaterialStateProperty.resolveWith((states) => 0.0),
               backgroundColor: MaterialStateColor.resolveWith((states) {
-                return _premiumButtonBackgroundColor;
+                return CustomColors.premiumButtonBackgroundColor;
               }),
             ),
             onPressed: () {},
             icon: _premiumIcon(
-              backgroundColor: _appPinkColor,
+              backgroundColor: CustomColors.appPinkColor,
               backgroundSize: 18.0,
             ),
             label: const Text(
               'Premium',
               style: TextStyle(
-                color: _appPinkColor,
-                fontFamily: _defaultFontFamily,
+                color: CustomColors.appPinkColor,
+                fontFamily: CustomFonts.defaultFontFamily,
               ),
             ),
           ),
@@ -573,12 +487,12 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
             child: Container(
               padding: const EdgeInsets.all(1.0),
               decoration: BoxDecoration(
-                  color: _closePremiumButtonBCIcon,
+                  color: CustomColors.closePremiumButtonBCIcon,
                   borderRadius: BorderRadius.circular(8.0)),
               child: const Icon(
                 Icons.close,
                 size: 8.0,
-                color: _appWhiteColor,
+                color: CustomColors.appWhiteColor,
               ),
             ),
           ),
@@ -596,7 +510,7 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
   _floatingActionButton() {
     return FloatingActionButton(
       onPressed: () {},
-      backgroundColor: _appPinkColor,
+      backgroundColor: CustomColors.appPinkColor,
       elevation: 3.0,
       tooltip: 'Add activity',
       child: const Icon(FontAwesomeIcons.plus, size: 16.0),
@@ -660,18 +574,18 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
                     icon,
                     size: 20.0,
                     color: index == _selectedIndex
-                        ? _appPinkColor
-                        : _appBlackGreyColor,
+                        ? CustomColors.appPinkColor
+                        : CustomColors.appBlackGreyColor,
                   ),
                 ),
                 Text(
                   label,
                   style: TextStyle(
-                    fontFamily: _defaultFontFamily,
+                    fontFamily: CustomFonts.defaultFontFamily,
                     fontSize: 12.0,
                     color: index == _selectedIndex
-                        ? _appPinkColor
-                        : _appBlackGreyColor,
+                        ? CustomColors.appPinkColor
+                        : CustomColors.appBlackGreyColor,
                   ),
                 ),
               ],
@@ -687,18 +601,4 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
       _selectedIndex = index;
     });
   }
-}
-
-class TabBarItemData {
-  String weekDayName;
-  int monthDayNumber;
-  bool? isSelected;
-  bool? isToday;
-
-  TabBarItemData({
-    required this.weekDayName,
-    required this.monthDayNumber,
-    this.isSelected = false,
-    this.isToday = false,
-  });
 }
